@@ -18,7 +18,7 @@
         <repository>
             <id>github</id>
             <name>GitHub Zloits Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/OWNER/REPOSITORY</url>
+            <url>https://maven.pkg.github.com/Zloits/Procyon</url>
         </repository>
     </distributionManagement>
 
