@@ -40,7 +40,7 @@ public class ProcyonTest {
     @SneakyThrows
     public static void testB() {
         SQLConnection sqlConnection = SQLConnection.createConnection(
-                "192.168.1.8", 3306, "procyon", "root", "root", false
+                "192.168.x.x", 3306, "procyon", "root", "root", false
         );
 
         procyonConnection.getConnections().add(sqlConnection);
