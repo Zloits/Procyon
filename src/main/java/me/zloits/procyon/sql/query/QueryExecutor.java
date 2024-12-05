@@ -33,7 +33,7 @@ public class QueryExecutor extends StartAbstract {
 
             preparedStatement.executeUpdate();
 
-            getProcyon().getExecutorService().submit(getExecutorCallback()::call);
+            getProcyon().getExecutorService().execute(getExecutorCallback()::call);
         } catch (SQLException e) {
             e.printStackTrace();
         }
