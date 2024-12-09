@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.zloits.procyon</groupId>
-    <artifactId>Procyon</artifactId>
+    <artifactId>procyon-lib</artifactId>
     <version>1.3-SNAPSHOT</version>
 
     <properties>
@@ -24,7 +24,7 @@
                 </repository>
                 <repository>
                     <id>github</id>
-                    <url>https://maven.pkg.github.com/zloits/procyon</url>
+                    <url>https://maven.pkg.github.com/Zloits/procyon-lib</url>
                     <snapshots>
                         <enabled>true</enabled>
                     </snapshots>
@@ -36,7 +36,7 @@
     <distributionManagement>
         <repository>
             <id>github</id>
-            <url>https://maven.pkg.github.com/zloits/procyon</url>
+            <url>https://maven.pkg.github.com/Zloits/procyon-lib</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
