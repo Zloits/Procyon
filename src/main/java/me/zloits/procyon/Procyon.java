@@ -5,9 +5,6 @@ import me.zloits.procyon.connection.ProcyonConnection;
 import me.zloits.procyon.logging.ProcyonLogger;
 import org.slf4j.Logger;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 @Getter
 public class Procyon {
 

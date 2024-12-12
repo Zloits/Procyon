@@ -48,7 +48,7 @@ public class QueryGetter<A> extends StartAbstract {
                 preparedStatement.setObject((i + 1), getInserts().get(i));
             }
 
-            getResultCallback().call(preparedStatement.executeQuery());
+             setResult(getResultCallback().call(preparedStatement.executeQuery()));
         } catch (SQLException e) {
             e.printStackTrace();
         }
