@@ -23,7 +23,7 @@ public class EventManager {
                 @SuppressWarnings("unchecked")
                 EventListener<T> eventListener = (EventListener<T>) listener;
 
-                procyon.getExecutorService().execute(() -> eventListener.onEvent(event));
+                eventListener.onEvent(event);
             }
         }
     }

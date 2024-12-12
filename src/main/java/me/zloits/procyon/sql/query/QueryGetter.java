@@ -48,13 +48,7 @@ public class QueryGetter<A> extends StartAbstract {
                 preparedStatement.setObject((i + 1), getInserts().get(i));
             }
 
-            getProcyon().getExecutorService().execute(() -> {
-                try {
-                    getResultCallback().call(preparedStatement.executeQuery());
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            });
+            getResultCallback().call(preparedStatement.executeQuery());
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -13,7 +13,6 @@ public class Procyon {
 
     @Getter
     private static Procyon procyon;
-    private final ExecutorService executorService = Executors.newFixedThreadPool(4);
     private final ProcyonLogger<Procyon> procyonProcyonLogger = new ProcyonLogger<>(Procyon.class);
     private final Logger logger = procyonProcyonLogger.getLogger();
     private final ProcyonConnection procyonConnection = new ProcyonConnection();

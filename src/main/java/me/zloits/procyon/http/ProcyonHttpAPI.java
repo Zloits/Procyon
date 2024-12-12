@@ -17,7 +17,6 @@ import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 
 import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
 
 @Getter
 public class ProcyonHttpAPI {
@@ -39,203 +38,171 @@ public class ProcyonHttpAPI {
 
     @SneakyThrows
     public <T> ProcyonHttpResponse<T> GET(String url, String apiKey, Class<T> clazz) {
-        CompletableFuture<ProcyonHttpResponse<T>> completableFuture = CompletableFuture.supplyAsync(() -> {
-            String httpUrl = BASE_URL + url;
+        String httpUrl = BASE_URL + url;
 
-            HttpGet httpGet = new HttpGet(httpUrl);
-            httpGet.addHeader("X_API_KEY", apiKey);
+        HttpGet httpGet = new HttpGet(httpUrl);
+        httpGet.addHeader("X_API_KEY", apiKey);
 
-            try {
-                CloseableHttpResponse response = httpClient.execute(httpGet);
+        try {
+            CloseableHttpResponse response = httpClient.execute(httpGet);
 
-                String json = EntityUtils.toString(response.getEntity());
+            String json = EntityUtils.toString(response.getEntity());
 
-                return new ProcyonHttpResponse<>(response, GsonUtil.fromJson(json, clazz));
-            } catch (IOException | ParseException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }, procyon.getExecutorService());
-
-        return completableFuture.get();
+            return new ProcyonHttpResponse<>(response, GsonUtil.fromJson(json, clazz));
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @SneakyThrows
     public <T> ProcyonHttpResponse<T> GET(String url, Class<T> clazz) {
-        CompletableFuture<ProcyonHttpResponse<T>> completableFuture = CompletableFuture.supplyAsync(() -> {
-            String httpUrl = BASE_URL + url;
+        String httpUrl = BASE_URL + url;
 
-            try {
-                CloseableHttpResponse response = httpClient.execute(new HttpGet(httpUrl));
+        try {
+            CloseableHttpResponse response = httpClient.execute(new HttpGet(httpUrl));
 
-                String json = EntityUtils.toString(response.getEntity());
+            String json = EntityUtils.toString(response.getEntity());
 
-                return new ProcyonHttpResponse<T>(response, GsonUtil.fromJson(json, clazz));
-            } catch (IOException | ParseException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }, procyon.getExecutorService());
-
-        return completableFuture.get();
+            return new ProcyonHttpResponse<T>(response, GsonUtil.fromJson(json, clazz));
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @SneakyThrows
     public ProcyonHttpResponse<Object> POST(String url, String apiKey, Object object) {
-        CompletableFuture<ProcyonHttpResponse<Object>> completableFuture = CompletableFuture.supplyAsync(() -> {
-            String httpUrl = BASE_URL + url;
+        String httpUrl = BASE_URL + url;
 
-            HttpPost httpPost = new HttpPost(httpUrl);
-            httpPost.addHeader("Content-Type", "application/json");
-            httpPost.addHeader("X_API_KEY", apiKey);
+        HttpPost httpPost = new HttpPost(httpUrl);
+        httpPost.addHeader("Content-Type", "application/json");
+        httpPost.addHeader("X_API_KEY", apiKey);
 
-            String json = GsonUtil.toJson(object);
-            StringEntity stringEntity = new StringEntity(json);
-            httpPost.setEntity(stringEntity);
+        String json = GsonUtil.toJson(object);
+        StringEntity stringEntity = new StringEntity(json);
+        httpPost.setEntity(stringEntity);
 
-            try {
-                CloseableHttpResponse response = httpClient.execute(httpPost);
+        try {
+            CloseableHttpResponse response = httpClient.execute(httpPost);
 
-                ProcyonHttpResponse<Object> procyonHttpResponse = new ProcyonHttpResponse<>(response, object);
-                if (procyonHttpResponse.response().getCode() != 200) throw new ProcyonHttpException(procyonHttpResponse.response().getReasonPhrase());
+            ProcyonHttpResponse<Object> procyonHttpResponse = new ProcyonHttpResponse<>(response, object);
+            if (procyonHttpResponse.response().getCode() != 200) throw new ProcyonHttpException(procyonHttpResponse.response().getReasonPhrase());
 
-                return procyonHttpResponse;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }, procyon.getExecutorService());
-
-        return completableFuture.get();
+            return procyonHttpResponse;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @SneakyThrows
     public ProcyonHttpResponse<Object> POST(String url, Object object) {
-        CompletableFuture<ProcyonHttpResponse<Object>> completableFuture = CompletableFuture.supplyAsync(() -> {
-            String httpUrl = BASE_URL + url;
+        String httpUrl = BASE_URL + url;
 
-            HttpPost httpPost = new HttpPost(httpUrl);
-            String json = GsonUtil.toJson(object);
-            StringEntity stringEntity = new StringEntity(json);
-            httpPost.addHeader("Content-Type", "application/json");
-            httpPost.setEntity(stringEntity);
+        HttpPost httpPost = new HttpPost(httpUrl);
+        String json = GsonUtil.toJson(object);
+        StringEntity stringEntity = new StringEntity(json);
+        httpPost.addHeader("Content-Type", "application/json");
+        httpPost.setEntity(stringEntity);
 
-            try {
-                CloseableHttpResponse response = httpClient.execute(httpPost);
+        try {
+            CloseableHttpResponse response = httpClient.execute(httpPost);
 
-                ProcyonHttpResponse<Object> procyonHttpResponse = new ProcyonHttpResponse<>(response, object);
-                if (procyonHttpResponse.response().getCode() != 200) throw new ProcyonHttpException(procyonHttpResponse.response().getReasonPhrase());
+            ProcyonHttpResponse<Object> procyonHttpResponse = new ProcyonHttpResponse<>(response, object);
+            if (procyonHttpResponse.response().getCode() != 200) throw new ProcyonHttpException(procyonHttpResponse.response().getReasonPhrase());
 
-                return procyonHttpResponse;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }, procyon.getExecutorService());
-
-        return completableFuture.get();
+            return procyonHttpResponse;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @SneakyThrows
     public ProcyonHttpResponse<Object> PUT(String url, String apiKey, Object object) {
-        CompletableFuture<ProcyonHttpResponse<Object>> completableFuture = CompletableFuture.supplyAsync(() -> {
-            String httpUrl = BASE_URL + url;
+        String httpUrl = BASE_URL + url;
 
-            HttpPut httpPut = new HttpPut(httpUrl);
-            httpPut.addHeader("Content-Type", "application/json");
-            httpPut.addHeader("X_API_KEY", apiKey);
+        HttpPut httpPut = new HttpPut(httpUrl);
+        httpPut.addHeader("Content-Type", "application/json");
+        httpPut.addHeader("X_API_KEY", apiKey);
 
-            String json = GsonUtil.toJson(object);
-            StringEntity stringEntity = new StringEntity(json);
-            httpPut.setEntity(stringEntity);
+        String json = GsonUtil.toJson(object);
+        StringEntity stringEntity = new StringEntity(json);
+        httpPut.setEntity(stringEntity);
 
-            try {
-                CloseableHttpResponse response = httpClient.execute(httpPut);
+        try {
+            CloseableHttpResponse response = httpClient.execute(httpPut);
 
-                ProcyonHttpResponse<Object> procyonHttpResponse = new ProcyonHttpResponse<>(response, object);
-                if (procyonHttpResponse.response().getCode() != 200) throw new ProcyonHttpException(procyonHttpResponse.response().getReasonPhrase());
+            ProcyonHttpResponse<Object> procyonHttpResponse = new ProcyonHttpResponse<>(response, object);
+            if (procyonHttpResponse.response().getCode() != 200) throw new ProcyonHttpException(procyonHttpResponse.response().getReasonPhrase());
 
-                return procyonHttpResponse;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }, procyon.getExecutorService());
-
-        return completableFuture.get();
+            return procyonHttpResponse;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @SneakyThrows
     public ProcyonHttpResponse<Object> PUT(String url, Object object) {
-        CompletableFuture<ProcyonHttpResponse<Object>> completableFuture = CompletableFuture.supplyAsync(() -> {
-            String httpUrl = BASE_URL + url;
+        String httpUrl = BASE_URL + url;
 
-            HttpPut httpPut = new HttpPut(httpUrl);
-            String json = GsonUtil.toJson(object);
-            StringEntity stringEntity = new StringEntity(json);
-            httpPut.addHeader("Content-Type", "application/json");
-            httpPut.setEntity(stringEntity);
+        HttpPut httpPut = new HttpPut(httpUrl);
+        String json = GsonUtil.toJson(object);
+        StringEntity stringEntity = new StringEntity(json);
+        httpPut.addHeader("Content-Type", "application/json");
+        httpPut.setEntity(stringEntity);
 
-            try {
-                CloseableHttpResponse response = httpClient.execute(httpPut);
+        try {
+            CloseableHttpResponse response = httpClient.execute(httpPut);
 
-                ProcyonHttpResponse<Object> nithiumHttpResponse = new ProcyonHttpResponse<>(response, object);
-                if (nithiumHttpResponse.response().getCode() != 200) throw new ProcyonHttpException(nithiumHttpResponse.response().getReasonPhrase());
+            ProcyonHttpResponse<Object> nithiumHttpResponse = new ProcyonHttpResponse<>(response, object);
+            if (nithiumHttpResponse.response().getCode() != 200) throw new ProcyonHttpException(nithiumHttpResponse.response().getReasonPhrase());
 
-                return nithiumHttpResponse;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }, procyon.getExecutorService());
-
-        return completableFuture.get();
+            return nithiumHttpResponse;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @SneakyThrows
     public boolean DELETE(String url, String apiKey) throws ProcyonHttpException {
-        CompletableFuture<Boolean> completableFuture = CompletableFuture.supplyAsync(() -> {
-            String httpUrl = BASE_URL + url;
+        String httpUrl = BASE_URL + url;
 
-            HttpDelete httpDelete = new HttpDelete(httpUrl);
-            httpDelete.setHeader("Accept", "application/json");
-            httpDelete.addHeader("X_API_KEY", apiKey);
+        HttpDelete httpDelete = new HttpDelete(httpUrl);
+        httpDelete.setHeader("Accept", "application/json");
+        httpDelete.addHeader("X_API_KEY", apiKey);
 
-            try {
-                CloseableHttpResponse response = httpClient.execute(httpDelete);
+        try {
+            CloseableHttpResponse response = httpClient.execute(httpDelete);
 
-                if (response.getCode() != 200) throw new ProcyonHttpException(response.getReasonPhrase());
+            if (response.getCode() != 200) throw new ProcyonHttpException(response.getReasonPhrase());
 
-                return true;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }, procyon.getExecutorService());
-
-        return completableFuture.get();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @SneakyThrows
     public boolean DELETE(String url) throws ProcyonHttpException {
-        CompletableFuture<Boolean> completableFuture = CompletableFuture.supplyAsync(() -> {
-            String httpUrl = BASE_URL + url;
+        String httpUrl = BASE_URL + url;
 
-            HttpDelete httpDelete = new HttpDelete(httpUrl);
-            httpDelete.setHeader("Accept", "application/json");
+        HttpDelete httpDelete = new HttpDelete(httpUrl);
+        httpDelete.setHeader("Accept", "application/json");
 
-            try {
-                CloseableHttpResponse response = httpClient.execute(httpDelete);
+        try {
+            CloseableHttpResponse response = httpClient.execute(httpDelete);
 
-                if (response.getCode() != 200) throw new ProcyonHttpException(response.getReasonPhrase());
+            if (response.getCode() != 200) throw new ProcyonHttpException(response.getReasonPhrase());
 
-                return true;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }, procyon.getExecutorService());
-
-        return completableFuture.get();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
