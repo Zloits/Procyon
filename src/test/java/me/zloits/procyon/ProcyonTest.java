@@ -1,18 +1,9 @@
 package me.zloits.procyon;
 
-import lombok.Getter;
-import lombok.SneakyThrows;
-import me.zloits.procyon.connection.ProcyonConnection;
-import me.zloits.procyon.logging.ProcyonLogger;
-import me.zloits.procyon.redis.ProcyonRedisConnection;
-import me.zloits.procyon.sql.SQLConnection;
-import me.zloits.procyon.sql.query.QueryExecutor;
-import me.zloits.procyon.sql.query.QueryGetter;
-
-import java.util.List;
-import java.util.UUID;
-
 public class ProcyonTest {
+
+    /*
+    Not using Junit.
 
     public static void main(String[] args) {
         testC();
@@ -91,4 +82,5 @@ public class ProcyonTest {
         procyonConnection.getConnections().add(redisConnection);
         System.out.println("Test G: WORKS");
     }
+     */
 }
