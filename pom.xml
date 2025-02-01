@@ -6,7 +6,7 @@
 
     <groupId>me.zloits.procyon</groupId>
     <artifactId>procyon-lib</artifactId>
-    <version>1.6-SNAPSHOT</version>
+    <version>1.6.5-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>22</maven.compiler.source>
