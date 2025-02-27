@@ -6,7 +6,7 @@ import me.zloits.procyon.Procyon;
 import me.zloits.procyon.abstracts.StartAbstract;
 import me.zloits.procyon.sql.SQLConnection;
 import me.zloits.procyon.sql.callback.ExecutorCallback;
-import me.zloits.procyon.util.InstanceGetter;
+import me.zloits.procyon.util.InstanceRegistry;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -20,7 +20,7 @@ import java.util.List;
 @Getter
 public class QueryExecutor extends StartAbstract {
 
-    private final Procyon procyon = InstanceGetter.get(Procyon.class);
+    private final Procyon procyon = InstanceRegistry.get(Procyon.class).orElseThrow();
     private SQLConnection connection;
     private String query;
     private ExecutorCallback executorCallback;

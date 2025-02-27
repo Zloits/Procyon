@@ -5,7 +5,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.*;
 import me.zloits.procyon.Procyon;
 import me.zloits.procyon.connection.IConnection;
-import me.zloits.procyon.util.InstanceGetter;
+import me.zloits.procyon.util.InstanceRegistry;
 import me.zloits.procyon.util.LogUtil;
 
 import java.sql.Connection;
@@ -20,7 +20,7 @@ import java.sql.SQLException;
 @Value
 public class SQLConnection implements IConnection {
 
-    private static Procyon procyon = InstanceGetter.get(Procyon.class);
+    private static Procyon procyon = InstanceRegistry.get(Procyon.class).orElseThrow();
 
     @NonNull
     String database;

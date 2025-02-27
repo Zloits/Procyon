@@ -6,7 +6,7 @@ import lombok.SneakyThrows;
 import me.zloits.procyon.Procyon;
 import me.zloits.procyon.http.exception.ProcyonHttpException;
 import me.zloits.procyon.util.GsonUtil;
-import me.zloits.procyon.util.InstanceGetter;
+import me.zloits.procyon.util.InstanceRegistry;
 import org.apache.hc.client5.http.classic.methods.*;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
@@ -20,7 +20,7 @@ import java.nio.charset.StandardCharsets;
 @Getter
 public class ProcyonHttpAPI {
 
-    private final Procyon procyon = InstanceGetter.get(Procyon.class);
+    private final Procyon procyon = InstanceRegistry.get(Procyon.class).orElseThrow();
     private final CloseableHttpClient httpClient;
 
     /**

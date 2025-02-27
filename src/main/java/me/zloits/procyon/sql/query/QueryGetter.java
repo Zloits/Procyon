@@ -5,7 +5,7 @@ import me.zloits.procyon.Procyon;
 import me.zloits.procyon.abstracts.StartAbstract;
 import me.zloits.procyon.sql.SQLConnection;
 import me.zloits.procyon.sql.callback.ResultCallback;
-import me.zloits.procyon.util.InstanceGetter;
+import me.zloits.procyon.util.InstanceRegistry;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -21,7 +21,7 @@ import java.util.List;
 @Getter
 public class QueryGetter<A> extends StartAbstract {
 
-    private final Procyon procyon = InstanceGetter.get(Procyon.class);
+    private final Procyon procyon = InstanceRegistry.get(Procyon.class).orElseThrow();
     @NonNull private final SQLConnection connection;
     @NonNull private final String query;
     @NonNull private final ResultCallback<A> resultCallback;

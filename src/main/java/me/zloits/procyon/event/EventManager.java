@@ -1,7 +1,7 @@
 package me.zloits.procyon.event;
 
 import me.zloits.procyon.Procyon;
-import me.zloits.procyon.util.InstanceGetter;
+import me.zloits.procyon.util.InstanceRegistry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class EventManager {
 
-    private final Procyon procyon = InstanceGetter.get(Procyon.class);
+    private final Procyon procyon = InstanceRegistry.get(Procyon.class).orElseThrow();
     private final Map<Class<? extends Event>, List<EventListener<? extends Event>>> listeners = new HashMap<>();
 
     /**
