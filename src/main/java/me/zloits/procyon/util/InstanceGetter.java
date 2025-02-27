@@ -49,6 +49,7 @@ public class InstanceGetter {
             }
         }
 
+        if (matchedInstances.isEmpty()) return null;
         if (matchedInstances.size() != 1) throw new IllegalStateException("Expected to obtain a single instance of "
                     + instanceClass.getName() + ", but found " + matchedInstances.size() + ".");
 
