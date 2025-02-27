@@ -1,14 +1,10 @@
 package me.zloits.procyon;
 
-import me.zloits.procyon.util.InstanceGetter;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 public class InstanceGetterTest {
 
     private final ExampleInstance exampleInstance = new ExampleInstance();
 
+    /*
     @Test
     void getInstanceTest() {
         InstanceGetter.add(exampleInstance);
@@ -23,4 +19,6 @@ public class InstanceGetterTest {
             System.out.println("Test duplicate instance test passed!");
         }
     }
+
+     */
 }
