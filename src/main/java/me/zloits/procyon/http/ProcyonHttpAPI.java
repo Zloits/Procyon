@@ -6,10 +6,8 @@ import lombok.SneakyThrows;
 import me.zloits.procyon.Procyon;
 import me.zloits.procyon.http.exception.ProcyonHttpException;
 import me.zloits.procyon.util.GsonUtil;
-import org.apache.hc.client5.http.classic.methods.HttpDelete;
-import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.classic.methods.HttpPut;
+import me.zloits.procyon.util.InstanceGetter;
+import org.apache.hc.client5.http.classic.methods.*;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.core5.http.ParseException;
@@ -17,25 +15,35 @@ import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Getter
 public class ProcyonHttpAPI {
 
-    @Getter
-    private static ProcyonHttpAPI httpAPI;
-
-    private final Procyon procyon = Procyon.getProcyon();
+    private final Procyon procyon = InstanceGetter.get(Procyon.class);
     private final CloseableHttpClient httpClient;
 
+    /**
+     * Base URL for API requests.
+     */
     @Setter
     private String BASE_URL = "https://api.example.com";
 
+    /**
+     * Constructor initializes the singleton instance and assigns the HTTP client.
+     * @param httpClient The HTTP client used for requests.
+     */
     public ProcyonHttpAPI(CloseableHttpClient httpClient) {
-        httpAPI = this;
-
         this.httpClient = httpClient;
     }
 
+    /**
+     * Executes a GET request with an API key.
+     * @param url Relative URL endpoint.
+     * @param apiKey API key for authentication.
+     * @param clazz Response object type.
+     * @return Parsed response wrapped in ProcyonHttpResponse.
+     */
     @SneakyThrows
     public <T> ProcyonHttpResponse<T> GET(String url, String apiKey, Class<T> clazz) {
         String httpUrl = BASE_URL + url;
@@ -43,11 +51,8 @@ public class ProcyonHttpAPI {
         HttpGet httpGet = new HttpGet(httpUrl);
         httpGet.addHeader("X_API_KEY", apiKey);
 
-        try {
-            CloseableHttpResponse response = httpClient.execute(httpGet);
-
+        try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
             String json = EntityUtils.toString(response.getEntity());
-
             return new ProcyonHttpResponse<>(response, GsonUtil.fromJson(json, clazz));
         } catch (IOException | ParseException e) {
             e.printStackTrace();
@@ -55,88 +60,105 @@ public class ProcyonHttpAPI {
         }
     }
 
+    /**
+     * Executes a GET request without an API key.
+     * @param url Relative URL endpoint.
+     * @param clazz Response object type.
+     * @return Parsed response wrapped in ProcyonHttpResponse.
+     */
     @SneakyThrows
     public <T> ProcyonHttpResponse<T> GET(String url, Class<T> clazz) {
         String httpUrl = BASE_URL + url;
 
-        try {
-            CloseableHttpResponse response = httpClient.execute(new HttpGet(httpUrl));
-
+        try (CloseableHttpResponse response = httpClient.execute(new HttpGet(httpUrl))) {
             String json = EntityUtils.toString(response.getEntity());
-
-            return new ProcyonHttpResponse<T>(response, GsonUtil.fromJson(json, clazz));
+            return new ProcyonHttpResponse<>(response, GsonUtil.fromJson(json, clazz));
         } catch (IOException | ParseException e) {
             e.printStackTrace();
             return null;
         }
     }
 
+    /**
+     * Executes a POST request with an API key.
+     * @param url Relative URL endpoint.
+     * @param apiKey API key for authentication.
+     * @param object Object to be sent as JSON.
+     * @return Response wrapped in ProcyonHttpResponse.
+     */
     @SneakyThrows
     public ProcyonHttpResponse<Object> POST(String url, String apiKey, Object object) {
-        String httpUrl = BASE_URL + url;
-
-        HttpPost httpPost = new HttpPost(httpUrl);
-        httpPost.addHeader("Content-Type", "application/json");
-        httpPost.addHeader("X_API_KEY", apiKey);
-
-        String json = GsonUtil.toJson(object);
-        StringEntity stringEntity = new StringEntity(json);
-        httpPost.setEntity(stringEntity);
-
-        try {
-            CloseableHttpResponse response = httpClient.execute(httpPost);
-
-            ProcyonHttpResponse<Object> procyonHttpResponse = new ProcyonHttpResponse<>(response, object);
-            if (procyonHttpResponse.response().getCode() != 200) throw new ProcyonHttpException(procyonHttpResponse.response().getReasonPhrase());
-
-            return procyonHttpResponse;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return executePostPutRequest(new HttpPost(BASE_URL + url), apiKey, object);
     }
 
+    /**
+     * Executes a POST request without an API key.
+     * @param url Relative URL endpoint.
+     * @param object Object to be sent as JSON.
+     * @return Response wrapped in ProcyonHttpResponse.
+     */
     @SneakyThrows
     public ProcyonHttpResponse<Object> POST(String url, Object object) {
-        String httpUrl = BASE_URL + url;
-
-        HttpPost httpPost = new HttpPost(httpUrl);
-        String json = GsonUtil.toJson(object);
-        StringEntity stringEntity = new StringEntity(json);
-        httpPost.addHeader("Content-Type", "application/json");
-        httpPost.setEntity(stringEntity);
-
-        try {
-            CloseableHttpResponse response = httpClient.execute(httpPost);
-
-            ProcyonHttpResponse<Object> procyonHttpResponse = new ProcyonHttpResponse<>(response, object);
-            if (procyonHttpResponse.response().getCode() != 200) throw new ProcyonHttpException(procyonHttpResponse.response().getReasonPhrase());
-
-            return procyonHttpResponse;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return executePostPutRequest(new HttpPost(BASE_URL + url), null, object);
     }
 
+    /**
+     * Executes a PUT request with an API key.
+     * @param url Relative URL endpoint.
+     * @param apiKey API key for authentication.
+     * @param object Object to be sent as JSON.
+     * @return Response wrapped in ProcyonHttpResponse.
+     */
     @SneakyThrows
     public ProcyonHttpResponse<Object> PUT(String url, String apiKey, Object object) {
-        String httpUrl = BASE_URL + url;
+        return executePostPutRequest(new HttpPut(BASE_URL + url), apiKey, object);
+    }
 
-        HttpPut httpPut = new HttpPut(httpUrl);
-        httpPut.addHeader("Content-Type", "application/json");
-        httpPut.addHeader("X_API_KEY", apiKey);
+    /**
+     * Executes a PUT request without an API key.
+     * @param url Relative URL endpoint.
+     * @param object Object to be sent as JSON.
+     * @return Response wrapped in ProcyonHttpResponse.
+     */
+    @SneakyThrows
+    public ProcyonHttpResponse<Object> PUT(String url, Object object) {
+        return executePostPutRequest(new HttpPut(BASE_URL + url), null, object);
+    }
+
+    /**
+     * Executes a DELETE request with an API key.
+     * @param url Relative URL endpoint.
+     * @param apiKey API key for authentication.
+     * @return true if successful, otherwise false.
+     */
+    @SneakyThrows
+    public boolean DELETE(String url, String apiKey) {
+        return executeDeleteRequest(url, apiKey);
+    }
+
+    /**
+     * Executes a DELETE request without an API key.
+     * @param url Relative URL endpoint.
+     * @return true if successful, otherwise false.
+     */
+    @SneakyThrows
+    public boolean DELETE(String url) {
+        return executeDeleteRequest(url, null);
+    }
+
+    /**
+     * Helper method to execute POST and PUT requests.
+     */
+    private ProcyonHttpResponse<Object> executePostPutRequest(HttpUriRequestBase request, String apiKey, Object object) {
+        request.addHeader("Content-Type", "application/json");
+        if (apiKey != null) request.addHeader("X_API_KEY", apiKey);
 
         String json = GsonUtil.toJson(object);
-        StringEntity stringEntity = new StringEntity(json);
-        httpPut.setEntity(stringEntity);
+        request.setEntity(new StringEntity(json, StandardCharsets.UTF_8));
 
-        try {
-            CloseableHttpResponse response = httpClient.execute(httpPut);
-
+        try (CloseableHttpResponse response = httpClient.execute(request)) {
             ProcyonHttpResponse<Object> procyonHttpResponse = new ProcyonHttpResponse<>(response, object);
-            if (procyonHttpResponse.response().getCode() != 200) throw new ProcyonHttpException(procyonHttpResponse.response().getReasonPhrase());
-
+            if (response.getCode() != 200) throw new ProcyonHttpException(response.getReasonPhrase());
             return procyonHttpResponse;
         } catch (IOException e) {
             e.printStackTrace();
@@ -144,61 +166,16 @@ public class ProcyonHttpAPI {
         }
     }
 
-    @SneakyThrows
-    public ProcyonHttpResponse<Object> PUT(String url, Object object) {
-        String httpUrl = BASE_URL + url;
-
-        HttpPut httpPut = new HttpPut(httpUrl);
-        String json = GsonUtil.toJson(object);
-        StringEntity stringEntity = new StringEntity(json);
-        httpPut.addHeader("Content-Type", "application/json");
-        httpPut.setEntity(stringEntity);
-
-        try {
-            CloseableHttpResponse response = httpClient.execute(httpPut);
-
-            ProcyonHttpResponse<Object> nithiumHttpResponse = new ProcyonHttpResponse<>(response, object);
-            if (nithiumHttpResponse.response().getCode() != 200) throw new ProcyonHttpException(nithiumHttpResponse.response().getReasonPhrase());
-
-            return nithiumHttpResponse;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    @SneakyThrows
-    public boolean DELETE(String url, String apiKey) throws ProcyonHttpException {
-        String httpUrl = BASE_URL + url;
-
-        HttpDelete httpDelete = new HttpDelete(httpUrl);
+    /**
+     * Helper method to execute DELETE requests.
+     */
+    private boolean executeDeleteRequest(String url, String apiKey) {
+        HttpDelete httpDelete = new HttpDelete(BASE_URL + url);
         httpDelete.setHeader("Accept", "application/json");
-        httpDelete.addHeader("X_API_KEY", apiKey);
+        if (apiKey != null) httpDelete.addHeader("X_API_KEY", apiKey);
 
-        try {
-            CloseableHttpResponse response = httpClient.execute(httpDelete);
-
+        try (CloseableHttpResponse response = httpClient.execute(httpDelete)) {
             if (response.getCode() != 200) throw new ProcyonHttpException(response.getReasonPhrase());
-
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @SneakyThrows
-    public boolean DELETE(String url) throws ProcyonHttpException {
-        String httpUrl = BASE_URL + url;
-
-        HttpDelete httpDelete = new HttpDelete(httpUrl);
-        httpDelete.setHeader("Accept", "application/json");
-
-        try {
-            CloseableHttpResponse response = httpClient.execute(httpDelete);
-
-            if (response.getCode() != 200) throw new ProcyonHttpException(response.getReasonPhrase());
-
             return true;
         } catch (IOException e) {
             e.printStackTrace();

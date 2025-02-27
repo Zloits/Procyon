@@ -5,6 +5,10 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 
+/**
+ * Utility class for JSON serialization and deserialization using a shared Gson instance.
+ * This prevents redundant Gson object creation.
+ */
 @UtilityClass
 public class GsonUtil {
 
