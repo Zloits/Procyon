@@ -17,7 +17,8 @@ public class CredentialPrintTest {
                 LogUtil.formatCredentials(
                         "Name", "Izhar",
                         "Age", 15,
-                        "City", "Pontianak"
+                        "City", "Pontianak",
+                        "Maximum Users Capacity Size", 200
                 )
         );
     }

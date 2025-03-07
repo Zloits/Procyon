@@ -12,14 +12,6 @@ import java.util.stream.IntStream;
 public class LogUtil {
 
     /**
-     * Template for formatting credential logs.
-     * This supports only two placeholders: "{}: {}".
-     * Example: "| Username: admin"
-     */
-    @Setter
-    private String credentialMessageTemplate = "| {}: {}";
-
-    /**
      * Formats credentials as key-value pairs in a structured log format.
      * Each pair is formatted using the `credentialMessageTemplate`.
      *
@@ -30,9 +22,17 @@ public class LogUtil {
     public String formatCredentials(Object... objects)  {
         if (objects.length % 2 != 0) throw new IllegalArgumentException("Unable to print " + Arrays.toString(objects) + ". Arguments must be even.");
 
+        int maxKeyLength = IntStream.range(0, objects.length / 2)
+                .map(i -> objects[i * 2].toString().length())
+                .max()
+                .orElse(0);
+
         return IntStream.range(0, objects.length / 2)
-                .mapToObj(i -> MessageFormatter.arrayFormat(credentialMessageTemplate,
-                        new Object[]{objects[i * 2], objects[i * 2 + 1]}).getMessage())
+                .mapToObj(i -> {
+                    String key = objects[i * 2].toString();
+                    String value = objects[i * 2 + 1].toString();
+                    return String.format("%-" + maxKeyLength + "s : %s", key, value);
+                })
                 .collect(Collectors.joining("\n"));
     }
 }
