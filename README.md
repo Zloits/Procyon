@@ -3,7 +3,7 @@
 Procyon is a lightweight Java library designed to streamline backend development by providing utilities for logging, instance management, HTTP requests, MySQL, Redis connections, etc.
 
 ## Features
-- **Logging**: Custom logger implementation for structured logging.
+- **Logging**: SLF4J logging.
 - **Instance Management**: Simple instance registry for easy dependency retrieval.
 - **HTTP Requests**: Lightweight HTTP client abstraction.
 - **Database Connectivity**: MySQL connection handling using HikariCP.
