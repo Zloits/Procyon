@@ -75,10 +75,39 @@ QueryGetter<UUID> queryGetter = new QueryGetter<>(sqlConnection, "select id from
 ```
 
 ### Redis Connection
+Initialize your connection
 ```java
 ProcyonRedisConnection redisConnection = ProcyonRedisConnection.createConnection("localhost", 6379);
 
 procyonConnection.getConnections().add(redisConnection);
+```
+
+Example Redis Packet
+```java
+@AllArgsConstructer
+@Getter
+public class ExamplePacket extends RedisPacket {
+
+    private final String name;
+
+    @Override
+    public @NonNull String getChannel() {
+        return "Example";
+    }
+}
+```
+
+Publish packet and handle packet response.
+```java
+ExamplePacket examplePacket = new ExamplePacket("Izhar");
+
+redisConnection.publish(examplePacket, json -> {
+    ExamplePacket examplePacket = GsonUtil.fromJson(json, ExamplePacket.class);
+
+    // Handle response...
+
+    System.out.println("Response successfully handled.");
+}, timeout)
 ```
 
 ## Contributing
