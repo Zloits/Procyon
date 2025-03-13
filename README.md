@@ -47,12 +47,31 @@ httpAPI.POST("/endpoint", "data");
 ```
 
 ### MySQL Connection
+Initialize your connection.
 ```java
 SQLConnection sqlConnection = SQLConnection.createConnection(
     "localhost", 3306, "database", "user", "password", false
 );
 
 procyonConnection.getConnections().add(sqlConnection);
+```
+
+Execute to database
+```java
+new QueryExecutor(sqlConnection, "insert into procyon (id) values (?)", () -> {
+    System.out.println("Test E: WORKS");
+}, List.of(uuid.toString())).start();
+```
+
+Retrieve data from database.
+```java
+QueryGetter<UUID> queryGetter = new QueryGetter<>(sqlConnection, "select id from procyon where id = ?", resultSet -> {
+    while (resultSet.next()) {
+        System.out.println("Test F: WORKS (1)");
+    }
+
+    return uuid;
+}, List.of(uuid.toString())).start();
 ```
 
 ### Redis Connection
