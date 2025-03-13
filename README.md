@@ -28,6 +28,7 @@ logger.info("Procyon is working!");
 ```
 
 ### Instance Management
+Instance Management were used for store instance class to **InstanceRegistry** for then to retrieve again. This is use when the Instance class does not provide **getInstance()** method.
 ```java
 // It could be any instance that don't have static getter to obtain again later.
 ExampleInstance instance = new ExampleInstance();
