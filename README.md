@@ -73,6 +73,10 @@ QueryGetter<UUID> queryGetter = new QueryGetter<>(sqlConnection, "select id from
 
     return uuid;
 }, List.of(uuid.toString())).start();
+
+queryGetter().start();
+
+UUID uuid = queryGetter.get();
 ```
 
 ### Redis Connection
