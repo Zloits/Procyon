@@ -12,12 +12,34 @@ Procyon is a lightweight Java library designed to streamline backend development
 - **More**
 
 ## Installation
+Maven
 ```xml
 <dependency>
   <groupId>me.zloits.procyon</groupId>
   <artifactId>procyon-lib</artifactId>
   <version>{VERSION}</version>
 </dependency>
+```
+
+Gradle
+
+[![](https://jitpack.io/v/Zloits/Procyon.svg)](https://jitpack.io/#Zloits/Procyon)
+
+Step 1: Add Jitpack repository.
+```gradle
+dependencyResolutionManagement {
+  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+      mavenCentral()
+      maven { url 'https://jitpack.io' }
+  }
+}
+```
+Step: Add the dependency.
+```gradle
+dependencies {
+  implementation 'com.github.Zloits:Procyon:Tag'
+}
 ```
 
 ## Basic Usage
