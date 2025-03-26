@@ -1,8 +1,6 @@
 package me.zloits.procyon.util;
 
-import lombok.Setter;
 import lombok.experimental.UtilityClass;
-import org.slf4j.helpers.MessageFormatter;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;

@@ -1,9 +1,12 @@
-package me.zloits.procyon.util;
+package me.zloits.procyon.util.executor;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import me.zloits.procyon.exception.ProcyonException;
 
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.*;
 
 /**
@@ -14,9 +17,37 @@ import java.util.concurrent.*;
 public class ExecutorUtil {
 
     @Getter
-    private final ExecutorService executorService = Executors.newFixedThreadPool(10);
+    private final Map<String, ExecutorService> pools = new ConcurrentHashMap<>();
     @Getter
     private final ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(10);
+
+    /**
+     * Store pool to Map.
+     */
+    public ExecutorService createPool(@NonNull SimplePoolConfiguration poolConfiguration, @NonNull ExecutorType executorType) {
+        if (getPool(poolConfiguration.getPoolName()).isPresent()) {
+            throw new IllegalStateException("Unable to create pool name: " + poolConfiguration.getPoolName() + " because pool with exact name is already exists.");
+        }
+
+        ExecutorService executorService = null;
+        switch (executorType) {
+            case SINGLE -> {
+                executorService = Executors.newSingleThreadExecutor(poolConfiguration.getThreadFactory());
+                break;
+            }
+            case FIXED -> {
+                executorService = Executors.newFixedThreadPool(poolConfiguration.getNThreads(), poolConfiguration.getThreadFactory());
+                break;
+            }
+            case CACHED -> {
+                executorService = Executors.newCachedThreadPool(poolConfiguration.getThreadFactory());
+            }
+        }
+
+        pools.put(poolConfiguration.getPoolName(), executorService);
+
+        return executorService;
+    }
 
     /**
      * Executes a {@link Callable} task, either asynchronously or synchronously with returnable.
@@ -29,7 +60,7 @@ public class ExecutorUtil {
      * @throws RuntimeException If an exception occurs during async execution.
      * @throws ProcyonException If an exception occurs during sync execution.
      */
-    public <T> T execute(boolean async, Callable<T> future) {
+    public <T> T execute(boolean async, ExecutorService executorService, Callable<T> future) {
         if (async) {
             Future<T> future1 = executorService.submit(future);
             try {
@@ -53,7 +84,7 @@ public class ExecutorUtil {
      *              Otherwise, it runs synchronously on the current thread.
      * @param runnable The {@link Runnable} task to execute.
      */
-    public void execute(boolean async, Runnable runnable) {
+    public void execute(boolean async, ExecutorService executorService, Runnable runnable) {
         if (async) {
             executorService.execute(runnable);
         } else {
@@ -77,5 +108,15 @@ public class ExecutorUtil {
      */
     public boolean getOtherwise() {
         return !isPool();
+    }
+
+    /**
+     * Retrieve {@link ExecutorService} from "pool name" from {@link SimplePoolConfiguration}.
+     *
+     * @param poolName Pool name.
+     * @return An {@link Optional} containing the stored {@link ExecutorService} if found, otherwise an empty {@link Optional}.
+     */
+    public Optional<ExecutorService> getPool(@NonNull String poolName) {
+        return Optional.ofNullable(getPools().get(poolName));
     }
 }

@@ -10,7 +10,7 @@ import lombok.Value;
 import me.zloits.procyon.connection.IConnection;
 import me.zloits.procyon.exception.PacketTimeoutException;
 import me.zloits.procyon.exception.ProcyonException;
-import me.zloits.procyon.util.ExecutorUtil;
+import me.zloits.procyon.util.executor.ExecutorUtil;
 import me.zloits.procyon.util.GsonUtil;
 
 import java.util.concurrent.CompletableFuture;

@@ -3,6 +3,7 @@ package me.zloits.procyon.util;
 import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.experimental.UtilityClass;
 
 /**
@@ -13,7 +14,8 @@ import lombok.experimental.UtilityClass;
 public class GsonUtil {
 
     @Getter
-    private final Gson gson = new Gson();
+    @Setter
+    private Gson gson = new Gson();
 
     public String toJson(@NonNull Object object) {
         return gson.toJson(object);
