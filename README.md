@@ -3,14 +3,16 @@
 Procyon is a lightweight Java library designed to streamline backend development by providing utilities for logging, instance management, HTTP requests, MySQL, Redis connections, etc.
 
 ## Features
-- **Logging**: Custom logger implementation for structured logging.
+- **Logging**: SLF4J logging.
 - **Instance Management**: Simple instance registry for easy dependency retrieval.
-- **HTTP Requests**: Lightweight HTTP client abstraction.
+- **HTTP Requests**: Lightweight HTTP client abstraction using Apache.
 - **Database Connectivity**: MySQL connection handling using HikariCP.
 - **Redis Integration**: Redis connection handling with Lettuce.
+- **Event Management**: Event.
 - **More**
 
 ## Installation
+Maven
 ```xml
 <dependency>
   <groupId>me.zloits.procyon</groupId>
@@ -19,15 +21,37 @@ Procyon is a lightweight Java library designed to streamline backend development
 </dependency>
 ```
 
+Gradle
+
+[![](https://jitpack.io/v/Zloits/Procyon.svg)](https://jitpack.io/#Zloits/Procyon)
+
+Step 1: Add Jitpack repository.
+```gradle
+dependencyResolutionManagement {
+  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+      mavenCentral()
+      maven { url 'https://jitpack.io' }
+  }
+}
+```
+Step: Add the dependency.
+```gradle
+dependencies {
+  implementation 'com.github.Zloits:Procyon:Tag'
+}
+```
+
 ## Basic Usage
 
-### Logging
+### Logging (SLF4J)
 ```java
 Logger logger = new ProcyonLogger<>(YourClass.class).getLogger();
 logger.info("Procyon is working!");
 ```
 
 ### Instance Management
+Instance Management were used for store instance class to **InstanceRegistry** for then to retrieve again. This is use when the Instance class does not provide **getInstance()** method.
 ```java
 // It could be any instance that don't have static getter to obtain again later.
 ExampleInstance instance = new ExampleInstance();
@@ -46,6 +70,7 @@ httpAPI.POST("/endpoint", "data");
 ```
 
 ### MySQL Connection
+Initialize your connection.
 ```java
 SQLConnection sqlConnection = SQLConnection.createConnection(
     "localhost", 3306, "database", "user", "password", false
@@ -54,11 +79,62 @@ SQLConnection sqlConnection = SQLConnection.createConnection(
 procyonConnection.getConnections().add(sqlConnection);
 ```
 
+Execute to database
+```java
+new QueryExecutor(sqlConnection, "insert into procyon (id) values (?)", () -> {
+    System.out.println("Test E: WORKS");
+}, List.of(uuid.toString())).start();
+```
+
+Retrieve data from database.
+```java
+QueryGetter<UUID> queryGetter = new QueryGetter<>(sqlConnection, "select id from procyon where id = ?", resultSet -> {
+    while (resultSet.next()) {
+        System.out.println("Test F: WORKS (1)");
+    }
+
+    return uuid;
+}, List.of(uuid.toString())).start();
+
+queryGetter().start();
+
+UUID uuid = queryGetter.get();
+```
+
 ### Redis Connection
+Initialize your connection
 ```java
 ProcyonRedisConnection redisConnection = ProcyonRedisConnection.createConnection("localhost", 6379);
 
 procyonConnection.getConnections().add(redisConnection);
+```
+
+Example Redis Packet
+```java
+@AllArgsConstructer
+@Getter
+public class ExamplePacket extends RedisPacket {
+
+    private final String name;
+
+    @Override
+    public @NonNull String getChannel() {
+        return "Example";
+    }
+}
+```
+
+Publish packet and handle packet response.
+```java
+ExamplePacket examplePacket = new ExamplePacket("Izhar");
+
+redisConnection.publish(examplePacket, json -> {
+    ExamplePacket examplePacket = GsonUtil.fromJson(json, ExamplePacket.class);
+
+    // Handle response...
+
+    System.out.println("Response successfully handled.");
+}, timeout)
 ```
 
 ## Contributing
