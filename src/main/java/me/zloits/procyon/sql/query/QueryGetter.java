@@ -65,17 +65,19 @@ public class QueryGetter<A> extends StartAbstract {
      */
     @Override
     public <T extends StartAbstract> T start() {
-        try {
-            PreparedStatement preparedStatement = getConnection().getConnection().prepareStatement(getQuery());
+        connection.executorService().submit(() -> {
+            try {
+                PreparedStatement preparedStatement = getConnection().connection().prepareStatement(getQuery());
 
-            for (int i = 0; i < getInserts().size(); i++) {
-                preparedStatement.setObject((i + 1), getInserts().get(i));
+                for (int i = 0; i < getInserts().size(); i++) {
+                    preparedStatement.setObject((i + 1), getInserts().get(i));
+                }
+
+                setResult(getResultCallback().call(preparedStatement.executeQuery()));
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-
-            setResult(getResultCallback().call(preparedStatement.executeQuery()));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        });
 
         return (T) this;
     }

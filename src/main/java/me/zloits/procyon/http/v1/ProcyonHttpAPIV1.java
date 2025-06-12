@@ -1,4 +1,4 @@
-package me.zloits.procyon.http;
+package me.zloits.procyon.http.v1;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 @Getter
-public class ProcyonHttpAPI {
+public class ProcyonHttpAPIV1 {
 
     private final Procyon procyon = InstanceRegistry.get(Procyon.class).orElseThrow();
     private final CloseableHttpClient httpClient;
@@ -33,7 +33,7 @@ public class ProcyonHttpAPI {
      * Constructor initializes the singleton instance and assigns the HTTP client.
      * @param httpClient The HTTP client used for requests.
      */
-    public ProcyonHttpAPI(CloseableHttpClient httpClient) {
+    public ProcyonHttpAPIV1(CloseableHttpClient httpClient) {
         this.httpClient = httpClient;
     }
 

@@ -24,7 +24,7 @@ public class ExecutorUtil {
     /**
      * Store pool to Map.
      */
-    public ExecutorService createPool(@NonNull SimplePoolConfiguration poolConfiguration, @NonNull ExecutorType executorType) {
+    public ExecutorService createPool(@NonNull PoolConfiguration poolConfiguration, @NonNull ExecutorType executorType) {
         if (getPool(poolConfiguration.getPoolName()).isPresent()) {
             throw new IllegalStateException("Unable to create pool name: " + poolConfiguration.getPoolName() + " because pool with exact name is already exists.");
         }
@@ -111,7 +111,7 @@ public class ExecutorUtil {
     }
 
     /**
-     * Retrieve {@link ExecutorService} from "pool name" from {@link SimplePoolConfiguration}.
+     * Retrieve {@link ExecutorService} from "pool name" from {@link PoolConfiguration}.
      *
      * @param poolName Pool name.
      * @return An {@link Optional} containing the stored {@link ExecutorService} if found, otherwise an empty {@link Optional}.

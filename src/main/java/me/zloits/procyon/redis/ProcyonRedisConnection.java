@@ -7,9 +7,12 @@ import io.lettuce.core.pubsub.RedisPubSubListener;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import lombok.NonNull;
 import lombok.Value;
+import me.zloits.procyon.Procyon;
 import me.zloits.procyon.connection.IConnection;
 import me.zloits.procyon.exception.PacketTimeoutException;
 import me.zloits.procyon.exception.ProcyonException;
+import me.zloits.procyon.redis.event.RedisPacketReceivedEvent;
+import me.zloits.procyon.util.InstanceRegistry;
 import me.zloits.procyon.util.executor.ExecutorUtil;
 import me.zloits.procyon.util.GsonUtil;
 
@@ -51,6 +54,26 @@ public class ProcyonRedisConnection implements IConnection {
         this.statefulRedisConnection = redisClient.connect();
         this.redisCommands = statefulRedisConnection.sync();
         this.pubSubConnection = redisClient.connectPubSub();
+
+        // Listen for the response on the corresponding channel
+        pubSubConnection.addListener(new RedisPubSubListener<String, String>() {
+            @Override
+            public void message(String channel, String message) {
+                RedisPacket redisPacket = GsonUtil.fromJson(message, RedisPacket.class);
+
+                String responseChannel = redisPacket.getChannel();
+                if (channel.equals(responseChannel)) {
+                    RedisPacketReceivedEvent redisPacketReceivedEvent = new RedisPacketReceivedEvent(redisPacket);
+                    InstanceRegistry.get(Procyon.class).orElseThrow().getEventManager().callEvent(redisPacketReceivedEvent);
+                }
+            }
+
+            @Override public void message(String s, String k1, String s2) {}
+            @Override public void subscribed(String s, long l) {}
+            @Override public void psubscribed(String s, long l) {}
+            @Override public void unsubscribed(String s, long l) {}
+            @Override public void punsubscribed(String s, long l) {}
+        });
     }
 
     /**

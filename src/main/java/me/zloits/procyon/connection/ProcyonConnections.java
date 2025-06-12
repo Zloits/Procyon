@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @Getter
-public class ProcyonConnection {
+public class ProcyonConnections {
 
     /**
      * A thread-safe map storing all registered connections.

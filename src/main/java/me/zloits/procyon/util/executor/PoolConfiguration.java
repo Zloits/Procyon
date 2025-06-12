@@ -7,9 +7,9 @@ import java.util.concurrent.ThreadFactory;
 
 @AllArgsConstructor
 @Data
-public class SimplePoolConfiguration {
+public class PoolConfiguration {
 
     private String poolName;
     private ThreadFactory threadFactory;
-    private int nThreads = 1;
+    private int nThreads;
 }

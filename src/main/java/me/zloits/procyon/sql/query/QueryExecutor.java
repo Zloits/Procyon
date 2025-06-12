@@ -26,6 +26,8 @@ public class QueryExecutor extends StartAbstract {
     private ExecutorCallback executorCallback;
     private List<Object> inserts;
 
+    private boolean next;
+
     /**
      * Executes the query and triggers the callback upon completion.
      *
@@ -34,19 +36,27 @@ public class QueryExecutor extends StartAbstract {
      */
     @Override
     public <T extends StartAbstract> T start() {
-        try {
-            PreparedStatement preparedStatement = getConnection().getConnection().prepareStatement(getQuery());
+        connection.executorService().submit(() -> {
+            try {
+                PreparedStatement preparedStatement = getConnection().connection().prepareStatement(getQuery());
 
-            for (int i = 0; i < getInserts().size(); i++) {
-                preparedStatement.setObject((i + 1), getInserts().get(i));
+                for (int i = 0; i < getInserts().size(); i++) {
+                    preparedStatement.setObject((i + 1), getInserts().get(i));
+                }
+
+                preparedStatement.executeUpdate();
+
+                next = true;
+                getExecutorCallback().call();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-
-            preparedStatement.executeUpdate();
-            getExecutorCallback().call();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        });
 
         return (T) this;
+    }
+
+    public boolean next() {
+        return next;
     }
 }

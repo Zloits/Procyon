@@ -3,29 +3,28 @@ package me.zloits.procyon.sql;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.*;
-import me.zloits.procyon.Procyon;
 import me.zloits.procyon.connection.IConnection;
-import me.zloits.procyon.util.InstanceRegistry;
+import me.zloits.procyon.logging.ProcyonLogger;
 import me.zloits.procyon.util.LogUtil;
+import me.zloits.procyon.util.executor.ExecutorType;
+import me.zloits.procyon.util.executor.ExecutorUtil;
+import me.zloits.procyon.util.executor.PoolConfiguration;
+import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * {@link SQLConnection} represents a connection to an SQL database.
  * It utilizes HikariCP for connection pooling and provides a structured way
  * to establish and manage database connections.
  */
-@RequiredArgsConstructor
-@Value
-public class SQLConnection implements IConnection {
+public record SQLConnection(ExecutorService executorService, @NonNull String database,
+                            @NonNull Connection connection) implements IConnection {
 
-    private static Procyon procyon = InstanceRegistry.get(Procyon.class).orElseThrow();
-
-    @NonNull
-    String database;
-    @NonNull
-    Connection connection;
+    static Logger logger = new ProcyonLogger<>(SQLConnection.class).getLogger();
 
     /**
      * Establishes a new SQL connection using HikariCP.
@@ -48,7 +47,7 @@ public class SQLConnection implements IConnection {
                 "Database", database,
                 "SSL", ssl
         ));
-        procyon.getLogger().info("Connecting to SQL Connection...");
+        logger.info("Connecting to SQL Connection...");
 
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database + "?allowPublicKeyRetrieval=true&useSSL=" + ssl);
@@ -57,9 +56,18 @@ public class SQLConnection implements IConnection {
 
         HikariDataSource hikariDataSource = new HikariDataSource(hikariConfig);
 
-        procyon.getLogger().info("Connection {}:{}/{} use SSL = {} is connected!", host, port, database, ssl);
+        logger.info("Connection {}:{}/{} use SSL = {} is connected!", host, port, database, ssl);
 
-        return new SQLConnection(database, hikariDataSource.getConnection());
+        ExecutorService executorService1 = ExecutorUtil.createPool(
+                new PoolConfiguration("mysql-" + host, Executors.defaultThreadFactory(), 2),
+                ExecutorType.FIXED
+        );
+
+        return new SQLConnection(executorService1, database, hikariDataSource.getConnection());
+    }
+
+    public Logger getLogger() {
+        return logger;
     }
 
     /**
