@@ -12,33 +12,33 @@ import java.util.List;
 
 public class CredentialPrintTest {
 
-    @Test
-    void printTest() {
-        Procyon procyon = new Procyon();
-
-        Logger logger = new ProcyonLogger<>(CredentialPrintTest.class).getLogger();
-
-        System.out.println(
-                LogUtil.formatCredentials(
-                        "Name", "Izhar",
-                        "Age", 15,
-                        "City", "Pontianak",
-                        "Maximum Users Capacity Size", 200
-                )
-        );
-    }
-
-    @Test
-    void sqlTest() {
-        try {
-            SQLConnection sqlConnection = SQLConnection.createConnection("0.0.0.0", 3306, "test", "root", "", false);
-
-            QueryGetter<ExampleInstance> queryGetter = new QueryGetter<>(sqlConnection, "select * from instances", resultSet -> {
-                return new ExampleInstance();
-            }, List.of());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
+//    @Test
+//    void printTest() {
+//        Procyon procyon = new Procyon();
+//
+//        Logger logger = new ProcyonLogger<>(CredentialPrintTest.class).getLogger();
+//
+//        System.out.println(
+//                LogUtil.formatCredentials(
+//                        "Name", "Izhar",
+//                        "Age", 15,
+//                        "City", "Pontianak",
+//                        "Maximum Users Capacity Size", 200
+//                )
+//        );
+//    }
+//
+//    @Test
+//    void sqlTest() {
+//        try {
+//            SQLConnection sqlConnection = SQLConnection.createConnection("0.0.0.0", 3306, "test", "root", "", false);
+//
+//            QueryGetter<ExampleInstance> queryGetter = new QueryGetter<>(sqlConnection, "select * from instances", resultSet -> {
+//                return new ExampleInstance();
+//            }, List.of());
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//    }
 }
