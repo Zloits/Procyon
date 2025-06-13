@@ -1,6 +1,6 @@
 # Procyon
 
-Procyon is a lightweight Java library designed to streamline backend development by providing utilities for logging, instance management, HTTP requests, MySQL, Redis connections, etc.
+Procyon is a lightweight Java wrappee designed to streamline backend development by providing utilities for logging, instance management, HTTP requests, MySQL, Redis connections, etc.
 
 ## Features
 - **Logging**: SLF4J logging.
