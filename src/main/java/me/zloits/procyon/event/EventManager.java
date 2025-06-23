@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class EventManager {
-
-    private final Procyon procyon = InstanceRegistry.get(Procyon.class).orElseThrow();
+    
     private final Map<Class<? extends Event>, List<EventListener<? extends Event>>> listeners = new HashMap<>();
 
     /**
