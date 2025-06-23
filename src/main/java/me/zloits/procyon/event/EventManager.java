@@ -1,8 +1,5 @@
 package me.zloits.procyon.event;
 
-import me.zloits.procyon.Procyon;
-import me.zloits.procyon.util.InstanceRegistry;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

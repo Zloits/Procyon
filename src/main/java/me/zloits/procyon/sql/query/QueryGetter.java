@@ -1,11 +1,9 @@
 package me.zloits.procyon.sql.query;
 
 import lombok.*;
-import me.zloits.procyon.Procyon;
 import me.zloits.procyon.abstracts.StartAbstract;
 import me.zloits.procyon.sql.SQLConnection;
 import me.zloits.procyon.sql.callback.ResultCallback;
-import me.zloits.procyon.util.InstanceRegistry;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -21,7 +19,6 @@ import java.util.List;
 @Getter
 public class QueryGetter<A> extends StartAbstract {
 
-    private final Procyon procyon = InstanceRegistry.get(Procyon.class).orElseThrow();
     @NonNull private final SQLConnection connection;
     @NonNull private final String query;
     @NonNull private final ResultCallback<A> resultCallback;
@@ -65,19 +62,17 @@ public class QueryGetter<A> extends StartAbstract {
      */
     @Override
     public <T extends StartAbstract> T start() {
-        connection.executorService().submit(() -> {
-            try {
-                PreparedStatement preparedStatement = getConnection().connection().prepareStatement(getQuery());
+        try {
+            PreparedStatement preparedStatement = getConnection().connection().prepareStatement(getQuery());
 
-                for (int i = 0; i < getInserts().size(); i++) {
-                    preparedStatement.setObject((i + 1), getInserts().get(i));
-                }
-
-                setResult(getResultCallback().call(preparedStatement.executeQuery()));
-            } catch (SQLException e) {
-                e.printStackTrace();
+            for (int i = 0; i < getInserts().size(); i++) {
+                preparedStatement.setObject((i + 1), getInserts().get(i));
             }
-        });
+
+            setResult(getResultCallback().call(preparedStatement.executeQuery()));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         return (T) this;
     }
